@@ -38,6 +38,9 @@ func (a *caseProvider) Get(input string) ([]domain.Case, error) {
 		if _, err := fmt.Sscanf(scanner.Text(), "%d %d", &width, &height); err != nil {
 			return nil, fmt.Errorf("failed to parse width and height for test case %d", i+1)
 		}
+		if width <= 0 || height <= 0 {
+			return nil, fmt.Errorf("invalid grid dimensions for test case %d", i+1)
+		}
 
 		// Read start and end points
 		if !scanner.Scan() {
@@ -47,6 +50,7 @@ func (a *caseProvider) Get(input string) ([]domain.Case, error) {
 		if _, err := fmt.Sscanf(scanner.Text(), "%d %d %d %d", &x1, &y1, &x2, &y2); err != nil {
 			return nil, fmt.Errorf("failed to parse start and end points for test case %d", i+1)
 		}
+
 		start := domain.Node{X: x1, Y: y1}
 		end := domain.Node{X: x2, Y: y2}
 
@@ -59,9 +63,9 @@ func (a *caseProvider) Get(input string) ([]domain.Case, error) {
 			return nil, fmt.Errorf("failed to parse number of obstacles for test case %d", i+1)
 		}
 
-		grid := make([][]bool, width)
+		grid := make([][]bool, height)
 		for j := range grid {
-			grid[j] = make([]bool, height)
+			grid[j] = make([]bool, width)
 		}
 
 		// Read each obstacle and mark the grid
@@ -69,16 +73,15 @@ func (a *caseProvider) Get(input string) ([]domain.Case, error) {
 			if !scanner.Scan() {
 				return nil, fmt.Errorf("not enough information for obstacle %d in test case %d", j+1, i+1)
 			}
-			var x1, x2, y1, y2 int
 			if _, err := fmt.Sscanf(scanner.Text(), "%d %d %d %d", &x1, &x2, &y1, &y2); err != nil {
 				return nil, fmt.Errorf("failed to parse obstacle %d for test case %d", j+1, i+1)
 			}
 			for x := x1; x <= x2; x++ {
 				for y := y1; y <= y2; y++ {
-					if x >= width || y >= height {
+					if x >= width || y >= height || x < 0 || y < 0 {
 						return nil, fmt.Errorf("obstacle %d for test case %d is out of grid bounds", j+1, i+1)
 					}
-					grid[x][y] = true
+					grid[y][x] = true
 				}
 			}
 		}
