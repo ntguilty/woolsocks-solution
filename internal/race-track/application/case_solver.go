@@ -6,8 +6,6 @@ import (
 	"woolsocks-solution/internal/race-track/domain"
 )
 
-// directions array represents the possible changes in velocity.
-// These are all the combinations of -1, 0, and 1 for both x and y directions.
 var directions = []domain.Node{
 	{-1, -1}, {-1, 0}, {-1, 1},
 	{0, -1}, {0, 0}, {0, 1},
@@ -21,6 +19,7 @@ func NewCaseSolver() *caseSolver {
 }
 
 // Solve method finds the least number of hops required to get from start to end point on the grid.
+// It's an implementation of A* algorithm
 func (a *caseSolver) Solve(grid [][]bool, start, end domain.Node, width, height int) string {
 	initialState := &domain.State{Point: start, Velocity: domain.Node{}, Hops: 0, Heuristic: a.heuristic(start, end)}
 	pq := &domain.PriorityQueue{initialState}
@@ -79,5 +78,5 @@ func (a *caseSolver) abs(x int) int {
 }
 
 func (a *caseSolver) isValid(x, y, width, height int, grid [][]bool) bool {
-	return x >= 0 && x < width && y >= 0 && y < height && !grid[x][y]
+	return x >= 0 && x < width && y >= 0 && y < height && !grid[y][x]
 }
